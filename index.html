@@ -29,7 +29,7 @@
         }
         .message {
             position: absolute;
-            top: 15%; /* 调整顶部位置 */
+            top: 15%;
             width: 100%;
             text-align: center;
             color: #FFD700;
@@ -37,7 +37,7 @@
             text-shadow: 0 0 10px #FF0000;
         }
         h1 {
-            font-size: 4.5em; /* 增大字体 */
+            font-size: 4.5em;
             animation: glow 2s ease-in-out infinite;
         }
         #playHint {
@@ -69,34 +69,21 @@
     </audio>
 
     <script>
-        // 烟花类型配置
         const FIREWORK_TYPES = [
-            {
-                colors: [0, 60], // 红黄色系
-                particleCount: 120,
-                explosionRadius: 8
-            },
-            {
-                colors: [120, 180], // 蓝绿色系
-                particleCount: 80,
-                explosionRadius: 5
-            },
-            {
-                colors: [240, 300], // 紫粉色系
-                particleCount: 150,
-                explosionRadius: 6
-            }
+            { colors: [0, 60], particleCount: 120, explosionRadius: 8 },
+            { colors: [120, 180], particleCount: 80, explosionRadius: 5 },
+            { colors: [240, 300], particleCount: 150, explosionRadius: 6 }
         ];
 
         class Firework {
-            constructor(canvas, ctx, x, y) { // 接收点击坐标
+            constructor(canvas, ctx, x, y) {
                 this.canvas = canvas;
                 this.ctx = ctx;
                 this.x = x;
                 this.startY = canvas.height;
                 this.y = this.startY;
-                this.targetY = y; // 目标为点击位置Y坐标
-                this.speed = 8; // 加快速度
+                this.targetY = y;
+                this.speed = 2 + Math.random(); // 降低速度（原速的1/3）
                 this.radius = 3;
                 this.exploded = false;
                 this.particles = [];
@@ -106,7 +93,7 @@
             update() {
                 if (!this.exploded) {
                     const dy = this.targetY - this.y;
-                    this.y += dy * 0.1; // 缓动效果
+                    this.y += dy * 0.05; // 减缓上升速度
                     if (Math.abs(dy) < 5) this.explode();
                 } else {
                     this.particles.forEach(particle => {
@@ -158,22 +145,29 @@
         canvas.height = window.innerHeight;
         
         const fireworks = [];
+        let lastAutoFireworkTime = 0;
 
-        // 点击事件处理
+        // 自动生成烟花
+        function createAutoFirework() {
+            const x = Math.random() * canvas.width;
+            const y = Math.random() * canvas.height * 0.5; // 在屏幕上半部分随机位置爆炸
+            fireworks.push(new Firework(canvas, ctx, x, y));
+        }
+
+        // 点击/触摸事件处理
+        function handleInteraction(x, y) {
+            fireworks.push(new Firework(canvas, ctx, x, y));
+        }
+
         canvas.addEventListener('click', (e) => {
             const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            fireworks.push(new Firework(canvas, ctx, x, y));
+            handleInteraction(e.clientX - rect.left, e.clientY - rect.top);
         });
 
-        // 触摸事件支持
         canvas.addEventListener('touchstart', (e) => {
             e.preventDefault();
             const rect = canvas.getBoundingClientRect();
-            const x = e.touches[0].clientX - rect.left;
-            const y = e.touches[0].clientY - rect.top;
-            fireworks.push(new Firework(canvas, ctx, x, y));
+            handleInteraction(e.touches[0].clientX - rect.left, e.touches[0].clientY - rect.top);
         });
 
         // 动画循环
@@ -181,6 +175,13 @@
             ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
+            // 自动生成烟花（每1.5秒一个）
+            const now = Date.now();
+            if (now - lastAutoFireworkTime > 1500) {
+                createAutoFirework();
+                lastAutoFireworkTime = now;
+            }
+
             fireworks.forEach((firework, index) => {
                 firework.update();
                 firework.draw();
@@ -192,7 +193,7 @@
         }
         animate();
 
-        // 动态祝福语（保持不变）
+        // 动态祝福语
         const blessings = ["财源滚滚随春到", "喜气洋洋伴福来", "万事如意新春乐", "阖家幸福庆团圆"];
         let index = 0;
         setInterval(() => {
@@ -204,7 +205,7 @@
             }, 500);
         }, 3000);
 
-        // 音乐控制（保持不变）
+        // 音乐控制
         document.addEventListener('click', () => {
             const music = document.getElementById('music');
             music.play();
