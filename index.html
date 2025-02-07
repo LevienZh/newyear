@@ -6,13 +6,16 @@
     <style>
         .signature {
             position: fixed;
-            right: 60px;
-            bottom: 180px;
+            right: 100px;
+            bottom: 200px;
             color: #FF0000;
             font-size: 3.0em;
-            font-family: '楷体', cursive;
+            font-family: '华文行楷', 'Brush Script MT', cursive;
+            font-weight: bold;  /* 加粗显示 */
             z-index: 3;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3),
+                         0 0 5px rgba(255,50,50,0.5); /* 增强立体感 */
+            -webkit-text-stroke: 0.5px #FFFFFF; /* 添加文字描边 */
         }
 
         body {
@@ -58,7 +61,7 @@
     </style>
 </head>
 <body>
-    <div class="signature">郑磊 敬</div>
+    <div class="signature">郑磊  敬</div>
 
     <canvas id="fireworks"></canvas>
     <div class="message">
