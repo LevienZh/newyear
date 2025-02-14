@@ -195,6 +195,17 @@
                     fireworks.splice(index, 1);
                 }
             });
+
+            // 随机生成闪烁的星星
+            ctx.fillStyle = 'white';
+            for (let i = 0; i < 10; i++) {
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * canvas.height;
+                ctx.beginPath();
+                ctx.arc(x, y, Math.random() * 2, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
             requestAnimationFrame(animate);
         }
         animate();
